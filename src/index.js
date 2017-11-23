@@ -1,0 +1,59 @@
+import { shallow } from 'enzyme'
+
+let mockStore = null
+export const createMockStore = (reducer, preloadedState = null) => {
+  let mockState = {}
+  let listeners = []
+
+  if (preloadedState !== null) {
+    mockState = preloadedState
+  }
+
+  class MockStore {
+    getState () {
+      return mockState
+    }
+
+    dispatch (action) {
+      mockState = reducer(mockState, action)
+      for (let i = 0, l = listeners.length; i < l; i++) {
+        listeners[i](mockState)
+      }
+    }
+
+    subscribe (listener) {
+      listeners.push(listener)
+      return () => {
+        listeners = listeners.splice(listeners.indexOf(listener), 1)
+      }
+    }
+
+    replaceReducer (nextReducer) {
+      reducer = nextReducer
+    }
+  }
+
+  mockStore = new MockStore()
+
+  return mockStore
+}
+
+export const createConnectedComponent = (mapStateToProps = null, mapDispatchToProps = null, component) => {
+  if (!mockStore) {
+    throw new Error('You have not created the store!')
+  }
+
+  let comp = shallow(component)
+
+  if (mapDispatchToProps) {
+    comp.setProps(mapDispatchToProps(mockStore.dispatch))
+  }
+
+  mockStore.subscribe(mockState => {
+    if (mapStateToProps) {
+      comp.setProps(mapStateToProps(mockState))
+    }
+  })
+
+  return comp
+}

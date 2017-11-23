@@ -1,0 +1,50 @@
+{
+  "name": "react-redux-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "license": "MIT",
+  "homepage": "https://github.com/dabit1/react-redux-test",
+  "bugs": {
+    "url": "https://github.com/dabit1/react-redux-test/issues"
+  },
+  "scripts": {
+    "build": "babel src -d dist",
+    "test": "jest --verbose"
+  },
+  "author": {
+    "name": "David Escalera",
+    "email": "david.escalera.ponce@gmail.com",
+    "url": "https://github.com/dabit1"
+  },
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-jest": "^21.2.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "enzyme": "^3.2.0",
+    "enzyme-adapter-react-16": "^1.1.0",
+    "jest": "^21.2.1",
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "standard": "^10.0.3"
+  },
+  "jest": {
+    "setupFiles": [
+      "./setuptests/shim.js",
+      "./setuptests/jestsetup.js"
+    ]
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dabit1/react-redux-test.git"
+  }
+}
