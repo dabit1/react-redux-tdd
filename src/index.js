@@ -2,12 +2,8 @@ import { shallow } from 'enzyme'
 
 let mockStore = null
 export const createMockStore = (reducer, preloadedState = null) => {
-  let mockState = {}
+  let mockState = preloadedState === null ? {} : preloadedState
   let listeners = []
-
-  if (preloadedState !== null) {
-    mockState = preloadedState
-  }
 
   class MockStore {
     getState () {
