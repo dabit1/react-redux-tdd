@@ -1,9 +1,9 @@
 {
   "name": "react-redux-test",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "./dist/index.js",
-  "license": "MIT",
+  "license": "ISC",
   "homepage": "https://github.com/dabit1/react-redux-test",
   "bugs": {
     "url": "https://github.com/dabit1/react-redux-test/issues"
@@ -17,7 +17,6 @@
     "email": "david.escalera.ponce@gmail.com",
     "url": "https://github.com/dabit1"
   },
-  "license": "ISC",
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.26.0",
