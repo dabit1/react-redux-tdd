@@ -62,23 +62,28 @@ const mapDispatchToProps = dispatch => {
 
 const store = createMockStore(todo, initialState)
 
-const todoListComp = createConnectedComponent(
-  mapStateToProps,
-  mapDispatchToProps,
-  <TodoList />
-)
+it('store should have one task', () => {
+  store.dispatch(addTask('My first task'))
 
-todoListComp.find('input').simulate('change', {target: {value: 'My first task'}})
-todoListComp.find('button').simulate('click')
-
-it('component should have one span tag', () => {
-  expect(todoListComp.find('span')).toHaveLength(2)
+  expect(store.getState().todo.tasks).toHaveLength(1)
 })
 
-todoListComp.find('input').simulate('change', {target: {value: 'My second task'}})
-todoListComp.find('button').simulate('click')
+let todoListComp = null
+
+it('component should have one span tag', () => {
+  todoListComp = createConnectedComponent(
+    mapStateToProps,
+    mapDispatchToProps,
+    <TodoList />
+  )
+  console.log(todoListComp.instance().props)
+  expect(todoListComp.find('span')).toHaveLength(1)
+})
 
 it('store should has two tasks', () => {
+  todoListComp.find('input').simulate('change', {target: {value: 'My second task'}})
+  todoListComp.find('button').simulate('click')
+
   expect(store.getState()).toHaveProperty('todo.tasks', ['My first task', 'My second task'])
 })
 

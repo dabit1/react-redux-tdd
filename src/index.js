@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 
 let mockStore = null
-export const createMockStore = (reducer, preloadedState = null) => {
+export const createMockStore = (reducer, preloadedState = null, middlewares = []) => {
   let mockState = preloadedState === null ? {} : preloadedState
   let listeners = []
 
@@ -11,6 +11,10 @@ export const createMockStore = (reducer, preloadedState = null) => {
     }
 
     dispatch (action) {
+
+      /*middlewares = middlewares.slice()
+      middlewares.reverse()*/
+
       mockState = reducer(mockState, action)
       for (let i = 0, l = listeners.length; i < l; i++) {
         listeners[i](mockState)
@@ -40,6 +44,10 @@ export const createConnectedComponent = (mapStateToProps = null, mapDispatchToPr
   }
 
   let comp = shallow(component)
+
+  if (mapStateToProps) {
+    comp.setProps(mapStateToProps(mockStore.getState()))
+  }
 
   if (mapDispatchToProps) {
     comp.setProps(mapDispatchToProps(mockStore.dispatch))
