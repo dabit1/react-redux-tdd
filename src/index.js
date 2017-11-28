@@ -1,13 +1,9 @@
 import { mount } from 'enzyme'
 
 export const setupJsdom = () => {
-  var jsdom = require('jsdom');
-  const { JSDOM } = jsdom;
-
-  global.window = document.defaultView
-  global.navigator = {
-    userAgent: 'node.js',
-  }
+  const { JSDOM } = require('jsdom')
+  const jsdom = new JSDOM('<!doctype html><html><body></body></html>')
+  const { window } = jsdom
 
   function copyProps(src, target) {
     const props = Object.getOwnPropertyNames(src)
@@ -18,7 +14,13 @@ export const setupJsdom = () => {
       }), {})
     Object.defineProperties(target, props)
   }
-  copyProps(document.defaultView, global)
+
+  global.window = window
+  global.document = window.document
+  global.navigator = {
+    userAgent: 'node.js',
+  }
+  copyProps(window, global)
 }
 
 let mockStore = null

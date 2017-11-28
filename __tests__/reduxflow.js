@@ -1,5 +1,5 @@
 import React from 'react'
-import { setupJsdom, createMockStore, createConnectedComponent } from '../src'
+import { createMockStore, createConnectedComponent } from '../src'
 
 /* ------ TESTS IMPLEMENTATION ------ */
 
