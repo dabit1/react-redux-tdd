@@ -76,7 +76,6 @@ it('component should have one span tag', () => {
     mapDispatchToProps,
     <TodoList />
   )
-  console.log(todoListComp.instance().props)
   expect(todoListComp.find('span')).toHaveLength(1)
 })
 

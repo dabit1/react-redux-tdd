@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 
 let mockStore = null
 export const createMockStore = (reducer, preloadedState = null, middlewares = []) => {
@@ -43,7 +43,7 @@ export const createConnectedComponent = (mapStateToProps = null, mapDispatchToPr
     throw new Error('You have not created the store!')
   }
 
-  let comp = shallow(component)
+  let comp = mount(component)
 
   if (mapStateToProps) {
     comp.setProps(mapStateToProps(mockStore.getState()))
