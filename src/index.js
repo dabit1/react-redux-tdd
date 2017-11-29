@@ -5,12 +5,12 @@ export const setupJsdom = () => {
   const jsdom = new JSDOM('<!doctype html><html><body></body></html>')
   const { window } = jsdom
 
-  function copyProps(src, target) {
+  function copyProps (src, target) {
     const props = Object.getOwnPropertyNames(src)
       .filter(prop => typeof target[prop] === 'undefined')
       .reduce((result, prop) => ({
         ...result,
-        [prop]: Object.getOwnPropertyDescriptor(src, prop),
+        [prop]: Object.getOwnPropertyDescriptor(src, prop)
       }), {})
     Object.defineProperties(target, props)
   }
@@ -18,12 +18,11 @@ export const setupJsdom = () => {
   global.window = window
   global.document = window.document
   global.navigator = {
-    userAgent: 'node.js',
+    userAgent: 'node.js'
   }
   copyProps(window, global)
 }
 
-let mockStore = null
 export const createMockStore = (reducer, preloadedState = null, middlewares = []) => {
   let mockState = preloadedState === null ? {} : preloadedState
   let listeners = []
@@ -34,9 +33,8 @@ export const createMockStore = (reducer, preloadedState = null, middlewares = []
     }
 
     dispatch (action) {
-
-      /*middlewares = middlewares.slice()
-      middlewares.reverse()*/
+      /* middlewares = middlewares.slice()
+      middlewares.reverse() */
 
       mockState = reducer(mockState, action)
       for (let i = 0, l = listeners.length; i < l; i++) {
@@ -56,12 +54,10 @@ export const createMockStore = (reducer, preloadedState = null, middlewares = []
     }
   }
 
-  mockStore = new MockStore()
-
-  return mockStore
+  return new MockStore()
 }
 
-export const createConnectedComponent = (mapStateToProps = null, mapDispatchToProps = null, component) => {
+export const createConnectedComponent = (mockStore, component, mapStateToProps = null, mapDispatchToProps = null) => {
   if (!mockStore) {
     throw new Error('You have not created the store!')
   }
