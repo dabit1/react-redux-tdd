@@ -46,16 +46,16 @@ export const createConnectedComponent = (mapStateToProps = null, mapDispatchToPr
   let comp = shallow(component)
 
   if (mapStateToProps) {
-    comp.setProps(mapStateToProps(mockStore.getState()))
+    comp.setProps(mapStateToProps(mockStore.getState(), comp.instance().props))
   }
 
   if (mapDispatchToProps) {
-    comp.setProps(mapDispatchToProps(mockStore.dispatch))
+    comp.setProps(mapDispatchToProps(mockStore.dispatch, comp.instance().props))
   }
 
   mockStore.subscribe(mockState => {
     if (mapStateToProps) {
-      comp.setProps(mapStateToProps(mockState))
+      comp.setProps(mapStateToProps(mockState, comp.instance().props))
     }
   })
 
