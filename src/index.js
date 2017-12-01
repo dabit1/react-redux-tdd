@@ -24,7 +24,6 @@ export const setupJsdom = () => {
   copyProps(window, global)
 }
 
-let mockStore = null
 export const createMockStore = (reducer, preloadedState = null, middlewares = []) => {
   let mockState = preloadedState === null ? {} : preloadedState
   let listeners = []
@@ -62,7 +61,7 @@ export const createMockStore = (reducer, preloadedState = null, middlewares = []
   return mockStore
 }
 
-export const createConnectedComponent = (mapStateToProps = null, mapDispatchToProps = null, component) => {
+export const createConnectedComponent = (mockStore, component, mapStateToProps = null, mapDispatchToProps = null) => {
   if (!mockStore) {
     throw new Error('You have not created the store!')
   }
@@ -70,16 +69,16 @@ export const createConnectedComponent = (mapStateToProps = null, mapDispatchToPr
   let comp = mount(component)
 
   if (mapStateToProps) {
-    comp.setProps(mapStateToProps(mockStore.getState()))
+    comp.setProps(mapStateToProps(mockStore.getState(), comp.instance().props))
   }
 
   if (mapDispatchToProps) {
-    comp.setProps(mapDispatchToProps(mockStore.dispatch))
+    comp.setProps(mapDispatchToProps(mockStore.dispatch, comp.instance().props))
   }
 
   mockStore.subscribe(mockState => {
     if (mapStateToProps) {
-      comp.setProps(mapStateToProps(mockState))
+      comp.setProps(mapStateToProps(mockState, comp.instance().props))
     }
   })
 

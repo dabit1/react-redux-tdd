@@ -72,9 +72,10 @@ let todoListComp = null
 
 it('component should have one span tag', () => {
   todoListComp = createConnectedComponent(
+    store,
+    <TodoList />,
     mapStateToProps,
-    mapDispatchToProps,
-    <TodoList />
+    mapDispatchToProps
   )
   expect(todoListComp.find('span')).toHaveLength(1)
 })
