@@ -1,16 +1,17 @@
 import { mount } from 'enzyme'
+import { applyMiddleware } from 'redux'
 
 export const setupJsdom = () => {
   const { JSDOM } = require('jsdom')
   const jsdom = new JSDOM('<!doctype html><html><body></body></html>')
   const { window } = jsdom
 
-  function copyProps(src, target) {
+  function copyProps (src, target) {
     const props = Object.getOwnPropertyNames(src)
       .filter(prop => typeof target[prop] === 'undefined')
       .reduce((result, prop) => ({
         ...result,
-        [prop]: Object.getOwnPropertyDescriptor(src, prop),
+        [prop]: Object.getOwnPropertyDescriptor(src, prop)
       }), {})
     Object.defineProperties(target, props)
   }
@@ -18,7 +19,7 @@ export const setupJsdom = () => {
   global.window = window
   global.document = window.document
   global.navigator = {
-    userAgent: 'node.js',
+    userAgent: 'node.js'
   }
   copyProps(window, global)
 }
@@ -34,10 +35,6 @@ export const createMockStore = (reducer, preloadedState = null, middlewares = []
     }
 
     dispatch (action) {
-
-      /*middlewares = middlewares.slice()
-      middlewares.reverse()*/
-
       mockState = reducer(mockState, action)
       for (let i = 0, l = listeners.length; i < l; i++) {
         listeners[i](mockState)
@@ -56,7 +53,11 @@ export const createMockStore = (reducer, preloadedState = null, middlewares = []
     }
   }
 
-  mockStore = new MockStore()
+  const MockStoreWithMiddleware = applyMiddleware(
+    ...middlewares
+  )(MockStore)
+
+  mockStore = new MockStoreWithMiddleware()
 
   return mockStore
 }
