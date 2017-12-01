@@ -1,3 +1,4 @@
+import React from 'react'
 import { mount } from 'enzyme'
 import { applyMiddleware } from 'redux'
 
@@ -24,63 +25,60 @@ export const setupJsdom = () => {
   copyProps(window, global)
 }
 
-export const createMockStore = (reducer, preloadedState = null, middlewares = []) => {
+export function createMockStore (reducer, preloadedState = null, middlewares = []) {
   let mockState = preloadedState === null ? {} : preloadedState
   let listeners = []
 
-  class MockStore {
-    getState () {
-      return mockState
-    }
+  function mockStore () {
+    return {
+      getState () {
+        return mockState
+      },
 
-    dispatch (action) {
-      mockState = reducer(mockState, action)
-      for (let i = 0, l = listeners.length; i < l; i++) {
-        listeners[i](mockState)
+      dispatch (action) {
+        mockState = reducer(mockState, action)
+        for (let i = 0, l = listeners.length; i < l; i++) {
+          listeners[i](mockState)
+        }
+      },
+
+      subscribe (listener) {
+        listeners.push(listener)
+        return () => {
+          listeners = listeners.splice(listeners.indexOf(listener), 1)
+        }
+      },
+
+      replaceReducer (nextReducer) {
+        reducer = nextReducer
       }
-    }
-
-    subscribe (listener) {
-      listeners.push(listener)
-      return () => {
-        listeners = listeners.splice(listeners.indexOf(listener), 1)
-      }
-    }
-
-    replaceReducer (nextReducer) {
-      reducer = nextReducer
     }
   }
 
   const MockStoreWithMiddleware = applyMiddleware(
     ...middlewares
-  )(MockStore)
+  )(mockStore)
 
-  mockStore = new MockStoreWithMiddleware()
-
-  return mockStore
+  return new MockStoreWithMiddleware()
 }
 
-export const createConnectedComponent = (mockStore, component, mapStateToProps = null, mapDispatchToProps = null) => {
+export const mountConnectedComponent = (mockStore, connectedComponent, props = {}) => {
   if (!mockStore) {
     throw new Error('You have not created the store!')
   }
 
-  let comp = mount(component)
+  const component = mount(React.createElement(connectedComponent, props), { context: { store: mockStore } })
 
-  if (mapStateToProps) {
-    comp.setProps(mapStateToProps(mockStore.getState(), comp.instance().props))
-  }
-
-  if (mapDispatchToProps) {
-    comp.setProps(mapDispatchToProps(mockStore.dispatch, comp.instance().props))
-  }
-
-  mockStore.subscribe(mockState => {
-    if (mapStateToProps) {
-      comp.setProps(mapStateToProps(mockState, comp.instance().props))
+  const oldDispatch = mockStore.dispatch
+  mockStore.dispatch = function (action) {
+    const propsBeforeDispatch = component.childAt(0).instance().props
+    const result = oldDispatch(action)
+    const propsAfterDispatch = component.childAt(0).instance().props
+    if (JSON.stringify(propsBeforeDispatch) !== JSON.stringify(propsAfterDispatch)) {
+      component.update()
     }
-  })
+    return result
+  }
 
-  return comp
+  return component
 }
