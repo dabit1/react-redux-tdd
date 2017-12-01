@@ -73,6 +73,10 @@ const store = createMockStore(todo, initialState)
 const ConnectedTodoList = connect(mapStateToProps, mapDispatchToProps)(TodoList)
 const wrapper = mountConnectedComponent(store, ConnectedTodoList, { foo: 'bar' })
 
+it('store should be the same at the initialState', () => {
+  expect(store.getState()).toEqual(initialState)
+})
+
 it('connected component should have foo prop', () => {
   expect(wrapper.prop('foo')).toBe('bar')
 })
