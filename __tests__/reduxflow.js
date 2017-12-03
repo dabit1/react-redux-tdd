@@ -92,7 +92,7 @@ it('store should have one task', () => {
 
 it('component should be updated after dispatch', () => {
   store.dispatch(addTask('My second task'))
-  expect(wrapper.find(TodoList).prop('foo')).toBe('bar')
+  expect(wrapper.find(TodoListItem)).toHaveLength(2)
 })
 
 it('component should have two span tag', () => {
