@@ -1,9 +1,16 @@
 import React from 'react'
-import { createMockStore, createConnectedComponent } from '../src'
+import { createMockStore, mountConnectedComponent } from '../src'
+import { connect } from 'react-redux'
 
 /* ------ TESTS IMPLEMENTATION ------ */
 
 // Component
+class TodoListItem extends React.Component {
+  render () {
+    return (<span>{this.props.task}</span>)
+  }
+}
+
 class TodoList extends React.Component {
   constructor (props) {
     super(props)
@@ -17,9 +24,9 @@ class TodoList extends React.Component {
     return (
       <div>
         <div onClick={this.props.onAddTask}>
-          {this.props.tasks && this.props.tasks.map((task, i) => <span key={i}>{task}</span>)}
+          {this.props.tasks && this.props.tasks.map((task, i) => <TodoListItem key={i} task={task} />)}
         </div>
-        <input type='text' onChange={event => this.setState({newTaskValue: event.target.value})} />
+        <input type='text' className='input-text' onChange={event => this.setState({newTaskValue: event.target.value})} />
         <button onClick={() => this.props.onAddTask(this.state.newTaskValue)}>Add task</button>
       </div>
     )
@@ -34,6 +41,8 @@ const todo = (state, action) => {
   switch (action.type) {
     case 'ADD_ITEM':
       return {...state, todo: {...state.todo, tasks: [...state.todo.tasks, action.task]}}
+    default:
+      return state
   }
 }
 
@@ -61,32 +70,42 @@ const mapDispatchToProps = dispatch => {
 /* ------ TESTS ------ */
 
 const store = createMockStore(todo, initialState)
+const ConnectedTodoList = connect(mapStateToProps, mapDispatchToProps)(TodoList)
+const wrapper = mountConnectedComponent(store, ConnectedTodoList, { foo: 'bar' })
+
+it('store should be the same at the initialState', () => {
+  expect(store.getState()).toEqual(initialState)
+})
+
+it('connected component should have foo prop', () => {
+  expect(wrapper.prop('foo')).toBe('bar')
+})
+
+it('component should have foo prop', () => {
+  expect(wrapper.find(TodoList).prop('foo')).toBe('bar')
+})
 
 it('store should have one task', () => {
   store.dispatch(addTask('My first task'))
-
   expect(store.getState().todo.tasks).toHaveLength(1)
 })
 
-let todoListComp = null
-
-it('component should have one span tag', () => {
-  todoListComp = createConnectedComponent(
-    store,
-    <TodoList />,
-    mapStateToProps,
-    mapDispatchToProps
-  )
-  expect(todoListComp.find('span')).toHaveLength(1)
-})
-
-it('store should has two tasks', () => {
-  todoListComp.find('input').simulate('change', {target: {value: 'My second task'}})
-  todoListComp.find('button').simulate('click')
-
-  expect(store.getState()).toHaveProperty('todo.tasks', ['My first task', 'My second task'])
+it('component should be updated after dispatch', () => {
+  store.dispatch(addTask('My second task'))
+  expect(wrapper.find(TodoListItem)).toHaveLength(2)
 })
 
 it('component should have two span tag', () => {
-  expect(todoListComp.find('span')).toHaveLength(2)
+  expect(wrapper.find('span')).toHaveLength(2)
+})
+
+it('store should has two tasks', () => {
+  wrapper.find('input').simulate('change', {target: {value: 'My third task'}})
+  wrapper.find('button').simulate('click')
+
+  expect(store.getState()).toHaveProperty('todo.tasks', ['My first task', 'My second task', 'My third task'])
+})
+
+it('component should have two span tag', () => {
+  expect(wrapper.find('span')).toHaveLength(3)
 })
