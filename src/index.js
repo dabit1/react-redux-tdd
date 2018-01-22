@@ -71,9 +71,10 @@ export const mountConnectedComponent = (mockStore, connectedComponent, props = {
 
   const oldDispatch = mockStore.dispatch
   mockStore.dispatch = function (action) {
-    const propsBeforeDispatch = component.childAt(0).instance().props
+    // we need to use getElement() if the component is stateless functional
+    const propsBeforeDispatch = component.childAt(0).instance() ? component.childAt(0).instance().props : component.childAt(0).getElement().props
     const result = oldDispatch(action)
-    const propsAfterDispatch = component.childAt(0).instance().props
+    const propsAfterDispatch = component.childAt(0).instance() ? component.childAt(0).instance().props : component.childAt(0).getElement().props
     if (JSON.stringify(propsBeforeDispatch) !== JSON.stringify(propsAfterDispatch)) {
       component.update()
     }
