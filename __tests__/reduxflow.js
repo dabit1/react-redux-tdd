@@ -99,13 +99,13 @@ it('component should have two span tag', () => {
   expect(wrapper.find('span')).toHaveLength(2)
 })
 
-it('store should has two tasks', () => {
+it('store should has three tasks', () => {
   wrapper.find('input').simulate('change', {target: {value: 'My third task'}})
   wrapper.find('button').simulate('click')
 
   expect(store.getState()).toHaveProperty('todo.tasks', ['My first task', 'My second task', 'My third task'])
 })
 
-it('component should have two span tag', () => {
+it('component should have three span tags', () => {
   expect(wrapper.find('span')).toHaveLength(3)
 })
