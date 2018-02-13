@@ -28,6 +28,7 @@ export const setupJsdom = () => {
 export function createMockStore (reducer, preloadedState = null, middlewares = []) {
   let mockState = preloadedState === null ? {} : preloadedState
   let listeners = []
+  let actions = []
 
   function mockStore () {
     return {
@@ -40,6 +41,7 @@ export function createMockStore (reducer, preloadedState = null, middlewares = [
         for (let i = 0, l = listeners.length; i < l; i++) {
           listeners[i](mockState)
         }
+        actions.push(action)
       },
 
       subscribe (listener) {
@@ -51,6 +53,10 @@ export function createMockStore (reducer, preloadedState = null, middlewares = [
 
       replaceReducer (nextReducer) {
         reducer = nextReducer
+      },
+
+      getDispatchedActions () {
+        return actions
       }
     }
   }
