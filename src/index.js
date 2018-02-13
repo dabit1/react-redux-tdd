@@ -47,7 +47,7 @@ export function createMockStore (reducer, preloadedState = null, middlewares = [
       subscribe (listener) {
         listeners.push(listener)
         return () => {
-          listeners = listeners.splice(listeners.indexOf(listener), 1)
+          listeners.splice(listeners.indexOf(listener), 1)
         }
       },
 
