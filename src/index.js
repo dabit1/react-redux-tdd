@@ -25,8 +25,8 @@ export const setupJsdom = () => {
   copyProps(window, global)
 }
 
-export function createMockStore (reducer = null, preloadedState = null, middlewares = []) {
-  let mockState = preloadedState === null ? {} : preloadedState
+export function createMockStore (reducer = null, preloadedState = undefined, middlewares = []) {
+  let mockState = preloadedState !== undefined ? preloadedState : (reducer ? reducer(undefined, {action: null}) : {})
   let listeners = []
   let actions = []
 
@@ -40,7 +40,7 @@ export function createMockStore (reducer = null, preloadedState = null, middlewa
         if (reducer) {
           mockState = reducer(mockState, action)
         }
-        
+
         for (let i = 0, l = listeners.length; i < l; i++) {
           listeners[i](mockState)
         }

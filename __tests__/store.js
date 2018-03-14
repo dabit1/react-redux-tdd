@@ -6,7 +6,7 @@ import { createMockStore } from '../src'
 const foo = () => ({type: 'FOO'})
 
 // Reducer
-const something = (state, action) => {
+const something = (state = initialState, action) => {
   switch (action.type) {
     case 'FOO':
       return {...state, called: true}
@@ -21,6 +21,18 @@ const initialState = {
 }
 
 /* ------ TESTS ------ */
+
+it('should have the state as the initial state if there is no preloaded state', () => {
+  const store = createMockStore(something, undefined)
+
+  expect(store.getState()).toEqual(initialState)
+})
+
+it('should have the state as the initial state if it is passed as an argument', () => {
+  const store = createMockStore(something, { initialState: true })
+
+  expect(store.getState()).toEqual({ initialState: true })
+})
 
 it('should be the store subscribable', () => {
   const store = createMockStore(something, initialState)
