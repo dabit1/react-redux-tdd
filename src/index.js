@@ -1,5 +1,5 @@
 import React from 'react'
-import { mount } from 'enzyme'
+import { shallow, mount } from 'enzyme'
 import { applyMiddleware } from 'redux'
 
 export const setupJsdom = () => {
@@ -71,12 +71,14 @@ export function createMockStore (reducer = null, preloadedState = undefined, mid
   return new MockStoreWithMiddleware()
 }
 
-export const mountConnectedComponent = (mockStore, connectedComponent, props = {}) => {
+const renderingConnectedComponent = (mockStore, connectedComponent, props, rendering) => {
   if (!mockStore) {
     throw new Error('You have not created the store!')
   }
 
-  const component = mount(React.createElement(connectedComponent, props), { context: { store: mockStore } })
+  const component = rendering === 'mount'
+                  ? mount(React.createElement(connectedComponent, props), { context: { store: mockStore } })
+                  : shallow(React.createElement(connectedComponent, props), { context: { store: mockStore } })
 
   const oldDispatch = mockStore.dispatch
   mockStore.dispatch = function (action) {
@@ -87,3 +89,9 @@ export const mountConnectedComponent = (mockStore, connectedComponent, props = {
 
   return component
 }
+
+export const mountConnectedComponent = (mockStore, connectedComponent, props = {}) =>
+  renderingConnectedComponent(mockStore, connectedComponent, props, 'mount')
+
+export const shallowConnectedComponent = (mockStore, connectedComponent, props = {}) =>
+  renderingConnectedComponent(mockStore, connectedComponent, props, 'shallow')
