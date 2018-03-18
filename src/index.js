@@ -26,7 +26,7 @@ export const setupJsdom = () => {
 }
 
 export function createMockStore (reducer = null, preloadedState = undefined, middlewares = []) {
-  let mockState = preloadedState !== undefined ? preloadedState : (reducer ? reducer(undefined, {action: null}) : {})
+  let mockState = reducer ? reducer(preloadedState, {action: null}) : (preloadedState !== undefined ? preloadedState : {});
   let listeners = []
   let actions = []
 
