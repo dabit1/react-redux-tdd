@@ -71,14 +71,25 @@ export function createMockStore (reducer = null, preloadedState = undefined, mid
   return new MockStoreWithMiddleware()
 }
 
-const renderingConnectedComponent = (mockStore, connectedComponent, props, rendering) => {
+const renderingConnectedComponent = (mockStore, connectedComponent, props, options, rendering) => {
   if (!mockStore) {
     throw new Error('You have not created the store!')
   }
 
+  let componentOptions = { context: { store: mockStore } }
+  if (options) {
+    componentOptions = {
+      ...options,
+      context: {
+        ...options.context,
+        ...componentOptions.context
+      }
+    }
+  }
+
   const component = rendering === 'mount'
-                  ? mount(React.createElement(connectedComponent, props), { context: { store: mockStore } })
-                  : shallow(React.createElement(connectedComponent, props), { context: { store: mockStore } })
+                  ? mount(React.createElement(connectedComponent, props), componentOptions)
+                  : shallow(React.createElement(connectedComponent, props), componentOptions)
 
   const oldDispatch = mockStore.dispatch
   mockStore.dispatch = function (action) {
@@ -90,8 +101,8 @@ const renderingConnectedComponent = (mockStore, connectedComponent, props, rende
   return component
 }
 
-export const mountConnectedComponent = (mockStore, connectedComponent, props = {}) =>
-  renderingConnectedComponent(mockStore, connectedComponent, props, 'mount')
+export const mountConnectedComponent = (mockStore, connectedComponent, props = {}, options = null) =>
+  renderingConnectedComponent(mockStore, connectedComponent, props, options, 'mount')
 
-export const shallowConnectedComponent = (mockStore, connectedComponent, props = {}) =>
-  renderingConnectedComponent(mockStore, connectedComponent, props, 'shallow')
+export const shallowConnectedComponent = (mockStore, connectedComponent, props = {}, options = null) =>
+  renderingConnectedComponent(mockStore, connectedComponent, props, options, 'shallow')
